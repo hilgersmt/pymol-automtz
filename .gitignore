@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Editor / OS
+.DS_Store
+*.swp
+
+# Crystallographic test data (do not commit)
+*.mtz
+*.pdb
+*.cif
+*.ccp4
+*.map
