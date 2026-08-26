@@ -6,10 +6,11 @@ Drop in a `.mtz` and immediately get 2Fo-Fc and Fo-Fc electron-density meshes at
 sensible contour levels, drawn as new objects, with a live panel to dial σ — plus
 a density "ball" that follows the center of rotation the way Coot does.
 
-![2Fo-Fc density around a heme group](docs/images/density-fit.png)
+![pymol-automtz demo: a 2Fo-Fc density sphere follows the view, its radius adjusts, then expands to the whole model](docs/images/demo.gif)
 
-*2Fo-Fc electron density (blue mesh, +1.5 σ) auto-drawn around the heme of myoglobin.
-Demo data is public: PDB **1BZ6** (1.2 Å) map coefficients from [PDB-REDO](https://pdb-redo.eu/).*
+*A 2Fo-Fc density sphere (blue mesh, +1.5 σ) follows the center of rotation, its radius
+adjusts, then expands to whole-model density. Public data: PDB **1BZ6** myoglobin (1.2 Å,
+heme in yellow) via [PDB-REDO](https://pdb-redo.eu/).*
 
 The heavy lifting is already in Incentive PyMOL's `cmd.load_mtz`, which reads the
 MTZ, auto-detects refmac/phenix/buster columns, FFT-synthesizes σ-normalized map
