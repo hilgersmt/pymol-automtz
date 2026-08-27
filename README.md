@@ -1,6 +1,6 @@
 # pymol-automtz
 
-**Coot-style "Auto Open MTZ..." for Incentive PyMOL.**
+**Coot-style `Auto Open MTZ...` for Incentive PyMOL.**
 
 Drop in a `.mtz` and immediately get 2Fo-Fc and Fo-Fc electron-density maps at
 sensible contour levels, drawn as new objects, with a live panel to dial σ — plus
