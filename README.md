@@ -1,31 +1,27 @@
 # pymol-automtz
 
-**Coot-style "Auto-Open MTZ" for Incentive PyMOL.**
+**Coot-style "Auto Open MTZ..." for Incentive PyMOL.**
 
-Drop in a `.mtz` and immediately get 2Fo-Fc and Fo-Fc electron-density meshes at
+Drop in a `.mtz` and immediately get 2Fo-Fc and Fo-Fc electron-density maps at
 sensible contour levels, drawn as new objects, with a live panel to dial σ — plus
-a density "ball" that follows the center of rotation the way Coot does.
+a density sphere that follows the center of rotation.
 
 ![pymol-automtz demo: a 2Fo-Fc density sphere follows the view while the live panel updates in sync](docs/images/demo.gif)
 
-*A 2Fo-Fc density sphere (blue mesh, +1.5 σ) follows the center of rotation, its radius
-adjusts, then expands to whole-model density — with the live σ panel updating in sync
-(mode, radius). Public data: PDB **1BZ6** myoglobin (1.2 Å, heme in yellow) via
-[PDB-REDO](https://pdb-redo.eu/).*
+*2Fo-Fc map (+1.5 σ) for myoglobin at 1.2 Å (PDB ID **1BZ6** myoglobin)*
 
-The heavy lifting is already in Incentive PyMOL's `cmd.load_mtz`, which reads the
-MTZ, auto-detects refmac/phenix/buster columns, FFT-synthesizes σ-normalized map
+Built on the `cmd.load_mtz` command of Incentive PyMOL, which reads the
+MTZ, auto-detects refmac/phenix/buster columns, synthesizes σ-normalized map
 objects (no CCP4/gemmi needed), and stores them as `<prefix>.2fofc` and
-`<prefix>.fofc`. This plugin adds the mesh drawing, the σ panel, the display
-modes, and the File→Open routing on top of that.
+`<prefix>.fofc` objects. This plugin renders the mesh, the σ panel, the display
+modes, and the File→Open routing.
 
 ## Requirements
 
 - **Incentive PyMOL only** (tested on 3.1.6.1). The open-source build's
   `load_mtz` raises `IncentiveOnlyException`, so this plugin will not work there.
 - The panel is built with **PyQt5** (`pymol.Qt`), which is what the Incentive GUI
-  runs on. (Tkinter is intentionally avoided — on macOS the bundled Tkinter is
-  linked against an absent X11 `libX11` and fails to load.)
+  runs on (avoids Tkinter on MacOS.)
 
 ## Install
 
