@@ -64,14 +64,14 @@ auto_mtz filename [, prefix [, selection [, carve [, level_2fofc [, level_fofc ]
 | `auto_mtz_route [on\|off]` | Toggle `.mtz` File→Open routing |
 | `auto_mtz_keys [on\|off]` | Toggle keyboard σ stepping (⌘-Up/Down) |
 
+### Keyboard shortcuts: 
+- **⌘ Cmd-Up / Cmd-Down** → 2Fo-Fc σ ±0.1 
+- **⇧⌘ Shift-Cmd-Up / Shift-Cmd-Down** → Fo-Fc σ ±0.1
+Toggle with `auto_mtz_keys on`; auto-on when installed as a plugin
+
 ### The panel
 
 <img src="docs/images/panel.png" width="400" alt="The sigma / display panel">
-
-**Keyboard shortcuts** (toggle with `auto_mtz_keys on`; auto-on when installed as a plugin):
-- **⌘ Cmd-Up / Cmd-Down** → 2Fo-Fc σ ±0.1 
-- **⇧⌘ Shift-Cmd-Up / Shift-Cmd-Down** → Fo-Fc σ ±0.1
-(macOS specifics in [Notes](#notes--caveats).)
 
 - **Show:** three display modes for *where* density is drawn —
   - **Sphere @ center** *(default)* — a radius-R ball that **follows the center of
