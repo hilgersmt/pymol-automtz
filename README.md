@@ -1,7 +1,7 @@
 # pymol-automtz
 
 **A plugin intended to make the handling of electron density maps more convenient
-in [Incentive PyMOL](https://www.pymol.org) on MacOS. Inspired by `Auto Open MTZ...` in
+in [Incentive PyMOL](https://www.pymol.org/#products) on MacOS. Inspired by `Auto Open MTZ...` in
 [Coot](https://www2.mrc-lmb.cam.ac.uk/personal/pemsley/coot/) and 
 [Bandicoot](https://github.com/fraser-lab/bandicoot).**
 
