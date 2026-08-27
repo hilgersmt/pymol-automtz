@@ -69,7 +69,8 @@ auto_mtz filename [, prefix [, selection [, carve [, level_2fofc [, level_fofc ]
 <img src="docs/images/panel.png" width="400" alt="The sigma / display panel">
 
 **Keyboard shortcuts** (toggle with `auto_mtz_keys on`; auto-on when installed as a plugin):
-**⌘ Cmd-Up / Cmd-Down** → 2Fo-Fc σ ±0.1 · **⇧⌘ Shift-Cmd-Up / Shift-Cmd-Down** → Fo-Fc σ ±0.1.
+**⌘ Cmd-Up / Cmd-Down** → 2Fo-Fc σ ±0.1 
+**⇧⌘ Shift-Cmd-Up / Shift-Cmd-Down** → Fo-Fc σ ±0.1
 (macOS specifics in [Notes](#notes--caveats).)
 
 - **Show:** three display modes for *where* density is drawn —
