@@ -66,7 +66,8 @@ auto_mtz filename [, prefix [, selection [, carve [, level_2fofc [, level_fofc ]
 
 ### The panel
 
-![The sigma / display panel](docs/images/panel.png)
+<img src="docs/images/panel.png" width="400" alt="The sigma / display panel">
+
 
 - **Show:** three display modes for *where* density is drawn —
   - **Sphere @ center** *(default)* — a radius-R ball that **follows the center of
