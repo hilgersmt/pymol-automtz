@@ -1,6 +1,9 @@
 # pymol-automtz
 
-**Coot-style `Auto Open MTZ...` for Incentive PyMOL.**
+**A plugin intended to make the handling of electron density maps more convenient
+in [Incentive PyMOL](https://www.pymol.org/) on MacOS. Inspired by `Auto Open MTZ...` in
+[Coot](https://www2.mrc-lmb.cam.ac.uk/personal/pemsley/coot/) and 
+[Bandicoot](https://github.com/fraser-lab/bandicoot).**
 
 Drop in a `.mtz` and immediately get 2Fo-Fc and Fo-Fc electron-density maps at
 sensible contour levels, drawn as new objects, with a live panel to dial σ — plus
