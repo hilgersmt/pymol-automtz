@@ -67,6 +67,7 @@ auto_mtz filename [, prefix [, selection [, carve [, level_2fofc [, level_fofc ]
 ### Keyboard shortcuts: 
 - **⌘ Cmd-Up / Cmd-Down** → 2Fo-Fc σ ±0.1 
 - **⇧⌘ Shift-Cmd-Up / Shift-Cmd-Down** → Fo-Fc σ ±0.1
+
 Toggle with `auto_mtz_keys on`; auto-on when installed as a plugin
 
 ### The panel
