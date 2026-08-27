@@ -64,7 +64,7 @@ auto_mtz filename [, prefix [, selection [, carve [, level_2fofc [, level_fofc ]
 | `auto_mtz_route [on\|off]` | Toggle `.mtz` File→Open routing |
 | `auto_mtz_keys [on\|off]` | Toggle keyboard σ stepping (⌘-Up/Down) |
 
-### Keyboard shortcuts: 
+### Keyboard shortcuts 
 - **⌘ Cmd-Up / Cmd-Down** → 2Fo-Fc σ ±0.1 
 - **⇧⌘ Shift-Cmd-Up / Shift-Cmd-Down** → Fo-Fc σ ±0.1
 
