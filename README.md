@@ -62,7 +62,7 @@ auto_mtz filename [, prefix [, selection [, carve [, level_2fofc [, level_fofc ]
 | `auto_mtz` | Load an MTZ and draw 2Fo-Fc / Fo-Fc meshes |
 | `sigma_panel` | Open the σ / display panel |
 | `auto_mtz_route [on\|off]` | Toggle `.mtz` File→Open routing |
-| `auto_mtz_keys [on\|off]` | Toggle keyboard σ stepping (see caveat) |
+| `auto_mtz_keys [on\|off]` | Toggle keyboard σ stepping (⌘-Up/Down) |
 
 ### The panel
 
@@ -94,11 +94,17 @@ Maps are σ-normalized by `load_mtz`, so contour level == σ directly.
   view-changed event) watching `get_view()`'s center of rotation. Each isomesh
   rebuild takes ~0.2 s on the main thread, so continuous "chase" updates a few
   times per second; "settle" mode recontours once you stop moving.
-- **Keyboard σ shortcuts are unreliable on macOS.** The OS intercepts modified
-  arrow keys (Mission Control, Spaces) and many function keys before PyMOL sees
-  them, and PyMOL's `set_key` only accepts CTRL/ALT modifiers (not Command). Use
-  the panel's mouse-wheel contouring instead. The `auto_mtz_keys` bindings
-  (Alt-arrows) are kept for other platforms.
+- **Keyboard σ shortcuts** (toggle with `auto_mtz_keys on|off`; auto-on when
+  installed as a plugin):
+  - **⌘ Cmd-Up / Cmd-Down** — 2Fo-Fc ± 0.1 σ
+  - **⇧⌘ Shift-Cmd-Up / Shift-Cmd-Down** — Fo-Fc ± 0.1 σ
+
+  These took some doing on macOS: PyMOL's GL viewport never takes keyboard
+  focus, the OS never delivers the Option modifier, and Ctrl+arrows are eaten by
+  Mission Control. The one modified-arrow that arrives app-wide is Command+arrow
+  (Qt reports it as its Ctrl modifier), so the shortcuts are wired through a
+  QApplication event filter and work regardless of focus. The panel's mouse-wheel
+  contouring (0.02 σ) remains for fine tweaks.
 
 ## License
 

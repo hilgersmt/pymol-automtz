@@ -694,13 +694,14 @@ cmd.extend('sigma_panel', sigma_panel)
 #
 # PyMOL's mouse binding (cmd.button) only maps buttons/modifiers to a fixed set
 # of built-in view actions, so Coot-style scroll-to-contour on the mouse isn't
-# possible. cmd.set_key CAN bind keys to Python callbacks (valid modifiers:
-# CTRL and ALT only -- SHIFT is rejected), so we drive sigma from the keyboard:
-#   Alt-Up   / Alt-Down   -> 2Fo-Fc  +/- step
-#   Alt-Right/ Alt-Left   -> Fo-Fc   +/- step (magnitude; +/- meshes stay symmetric)
-# All on the Option (Alt) modifier: Ctrl-arrows are grabbed by macOS Mission
-# Control, and plain arrows are PyMOL's movie-frame keys. Keys act on the
-# "active" set: the one selected in the sigma panel, else the most recent.
+# possible. Keyboard: on macOS the GL viewport never takes focus, Option/Ctrl
+# +arrows never arrive (Option swallowed by the OS, Ctrl+arrow = Mission
+# Control), so we use a QApplication event filter and bind the one combo that
+# is delivered app-wide -- Command+Up/Down (Qt reports Cmd as ControlModifier):
+#   Cmd-Up / Cmd-Down        -> 2Fo-Fc  +/- step
+#   Shift-Cmd-Up / -Down     -> Fo-Fc   +/- step (magnitude; +/- stay symmetric)
+# Steps act on the "active" set: the one selected in the sigma panel, else the
+# most recently loaded.
 
 _KEYS = {'enabled': False}
 
@@ -756,30 +757,101 @@ def _step_fofc(delta):
 
 
 # Keyboard step is coarser than the mouse-wheel step (_STEP_2FOFC = 0.02) so a
-# single Option-arrow press is clearly visible.
+# single keypress clearly moves the contour.
 _KEY_STEP = 0.1
 
-_SIGMA_KEYS = ('ALT-UP', 'ALT-DOWN', 'ALT-RIGHT', 'ALT-LEFT')
+# set_key fallback labels (used only when there's no Qt app, e.g. headless).
+_SIGMA_KEYS = ('CTRL-UP', 'CTRL-DOWN', 'CTSH-UP', 'CTSH-DOWN')
+_KEY_BINDINGS = (
+    ('CTRL-UP',   lambda: _step_2fofc(+_KEY_STEP)),
+    ('CTRL-DOWN', lambda: _step_2fofc(-_KEY_STEP)),
+    ('CTSH-UP',   lambda: _step_fofc(+_KEY_STEP)),
+    ('CTSH-DOWN', lambda: _step_fofc(-_KEY_STEP)),
+)
+_KEY_FILTER = {'obj': None, 'app': None}
+
+
+def _make_key_filter():
+    '''QApplication event filter: Cmd-Up/Down steps 2Fo-Fc sigma.
+
+    Diagnosed on macOS (see repo history): the GL viewport never takes keyboard
+    focus, and the OS never delivers the Option modifier, while Ctrl+arrows are
+    eaten by Mission Control. The one modified-arrow that arrives app-wide is
+    Command+arrow, which Qt reports as ControlModifier (Ctrl/Meta are swapped on
+    Mac). An app-level filter catches it before any widget, so it works no
+    matter what has focus (command line, panel, etc.). Only Up/Down are bound
+    (Cmd+Left/Right are text-navigation in the command line).
+    '''
+    from pymol.Qt import QtCore
+
+    class _SigmaKeyFilter(QtCore.QObject):
+        def eventFilter(self, obj, ev):
+            try:
+                if ev.type() == QtCore.QEvent.KeyPress:
+                    m = ev.modifiers()
+                    ctrl = bool(m & QtCore.Qt.ControlModifier)   # = Cmd on mac
+                    shift = bool(m & QtCore.Qt.ShiftModifier)
+                    block = bool(m & (QtCore.Qt.AltModifier |
+                                      QtCore.Qt.MetaModifier))
+                    if ctrl and not block:
+                        # Cmd-Up/Down = 2Fo-Fc; Shift-Cmd-Up/Down = Fo-Fc.
+                        step = _step_fofc if shift else _step_2fofc
+                        k = ev.key()
+                        if k == QtCore.Qt.Key_Up:
+                            step(+_KEY_STEP); return True
+                        if k == QtCore.Qt.Key_Down:
+                            step(-_KEY_STEP); return True
+            except Exception:
+                pass
+            return False
+
+    return _SigmaKeyFilter()
 
 
 def enable_mtz_keys(quiet=1):
-    '''Bind Option(Alt)-Up/Down to step 2Fo-Fc sigma (Left/Right = Fo-Fc).
+    '''Bind Command-Up/Down to step 2Fo-Fc sigma via a QApplication event filter.
 
-    Use the Option (Alt) modifier -- Ctrl+arrows are grabbed by macOS Mission
-    Control / Spaces and never reach PyMOL, but Option+arrows do.
+    On macOS neither cmd.set_key nor Qt QShortcuts receive the needed keys over
+    the GL viewport, and Option/Ctrl+arrows don't arrive at all -- but
+    Command+Up/Down does, app-wide. Fall back to set_key when there's no Qt app.
     '''
-    cmd.set_key('ALT-UP', lambda: _step_2fofc(+_KEY_STEP))
-    cmd.set_key('ALT-DOWN', lambda: _step_2fofc(-_KEY_STEP))
-    cmd.set_key('ALT-RIGHT', lambda: _step_fofc(+_KEY_STEP))
-    cmd.set_key('ALT-LEFT', lambda: _step_fofc(-_KEY_STEP))
+    disable_mtz_keys(quiet=1)
+    try:
+        from pymol.Qt import QtWidgets
+        app = QtWidgets.QApplication.instance()
+    except Exception:
+        app = None
+
+    if app is not None:
+        filt = _make_key_filter()
+        app.installEventFilter(filt)
+        _KEY_FILTER['obj'] = filt
+        _KEY_FILTER['app'] = app
+        how = 'Qt event filter'
+    else:
+        for k, fn in _KEY_BINDINGS:
+            cmd.set_key(k, fn)
+        how = 'set_key'
+
     _KEYS['enabled'] = True
     if not quiet:
-        print(' auto_mtz: sigma keys ON  (Option-Up/Down = 2Fo-Fc +/- %g sigma; '
-              'Option-Right/Left = Fo-Fc). Use Option, not Ctrl.' % _KEY_STEP)
+        print(' auto_mtz: sigma keys ON via %s  (Cmd-Up/Down = 2Fo-Fc, '
+              'Shift-Cmd-Up/Down = Fo-Fc; +/- %g sigma)' % (how, _KEY_STEP))
 
 
 def disable_mtz_keys(quiet=1):
-    '''Unbind the sigma keys (rebinds them to no-ops -- PyMOL has no true unset).'''
+    '''Remove the event filter (and any set_key fallbacks).'''
+    filt = _KEY_FILTER.get('obj')
+    app = _KEY_FILTER.get('app')
+    if filt is not None:
+        try:
+            if app is not None:
+                app.removeEventFilter(filt)
+            filt.deleteLater()
+        except Exception:
+            pass
+    _KEY_FILTER['obj'] = None
+    _KEY_FILTER['app'] = None
     for k in _SIGMA_KEYS:
         try:
             cmd.set_key(k, lambda *a: None)
@@ -795,8 +867,8 @@ def auto_mtz_keys(state='toggle', _self=cmd):
 DESCRIPTION
 
     Toggle keyboard sigma stepping for the active map set.
-      Alt-Up   / Alt-Down   raise/lower 2Fo-Fc by 0.1 sigma
-      Alt-Right/ Alt-Left   raise/lower Fo-Fc  by 0.1 sigma (+/- stay symmetric)
+      Cmd-Up / Cmd-Down            raise/lower 2Fo-Fc by 0.1 sigma
+      Shift-Cmd-Up / Shift-Cmd-Down  raise/lower Fo-Fc by 0.1 sigma
 
 USAGE
 
@@ -932,7 +1004,7 @@ def __init_plugin__(app=None):
         addmenuitemqt('Auto MTZ: sigma panel', sigma_panel)
         addmenuitemqt('Auto MTZ: toggle .mtz open routing',
                       lambda: auto_mtz_route('toggle'))
-        addmenuitemqt('Auto MTZ: toggle sigma keys (Alt-arrows)',
+        addmenuitemqt('Auto MTZ: toggle sigma keys (Cmd-Up/Down)',
                       lambda: auto_mtz_keys('toggle'))
         return
     except Exception:
@@ -975,4 +1047,4 @@ if __name__ == 'pymol':
     # `run auto_mtz.py` inside PyMOL registers the command without the menu.
     print(' auto_mtz loaded. Try: auto_mtz your.mtz   (then: sigma_panel)')
     print('   sigma keys: auto_mtz_keys on  '
-          '(Alt-Up/Down = 2Fo-Fc, Alt-Right/Left = Fo-Fc)')
+          '(Cmd-Up/Down = 2Fo-Fc, Shift-Cmd-Up/Down = Fo-Fc)')
