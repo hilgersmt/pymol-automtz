@@ -755,20 +755,27 @@ def _step_fofc(delta):
     _sync_panel(prefix)
 
 
+# Keyboard step is coarser than the mouse-wheel step (_STEP_2FOFC = 0.02) so a
+# single Option-arrow press is clearly visible.
+_KEY_STEP = 0.1
+
 _SIGMA_KEYS = ('ALT-UP', 'ALT-DOWN', 'ALT-RIGHT', 'ALT-LEFT')
 
 
 def enable_mtz_keys(quiet=1):
-    '''Bind Option(Alt)-arrows to live sigma stepping.'''
-    cmd.set_key('ALT-UP', lambda: _step_2fofc(+_STEP_2FOFC))
-    cmd.set_key('ALT-DOWN', lambda: _step_2fofc(-_STEP_2FOFC))
-    cmd.set_key('ALT-RIGHT', lambda: _step_fofc(+_STEP_FOFC))
-    cmd.set_key('ALT-LEFT', lambda: _step_fofc(-_STEP_FOFC))
+    '''Bind Option(Alt)-Up/Down to step 2Fo-Fc sigma (Left/Right = Fo-Fc).
+
+    Use the Option (Alt) modifier -- Ctrl+arrows are grabbed by macOS Mission
+    Control / Spaces and never reach PyMOL, but Option+arrows do.
+    '''
+    cmd.set_key('ALT-UP', lambda: _step_2fofc(+_KEY_STEP))
+    cmd.set_key('ALT-DOWN', lambda: _step_2fofc(-_KEY_STEP))
+    cmd.set_key('ALT-RIGHT', lambda: _step_fofc(+_KEY_STEP))
+    cmd.set_key('ALT-LEFT', lambda: _step_fofc(-_KEY_STEP))
     _KEYS['enabled'] = True
     if not quiet:
-        print(' auto_mtz: sigma keys ON  (Alt-Up/Down = 2Fo-Fc, '
-              'Alt-Right/Left = Fo-Fc). NOTE: macOS intercepts modified '
-              'arrows -- use the panel mouse-wheel instead.')
+        print(' auto_mtz: sigma keys ON  (Option-Up/Down = 2Fo-Fc +/- %g sigma; '
+              'Option-Right/Left = Fo-Fc). Use Option, not Ctrl.' % _KEY_STEP)
 
 
 def disable_mtz_keys(quiet=1):
