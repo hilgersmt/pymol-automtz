@@ -8,17 +8,17 @@ a density sphere that follows the center of rotation.
 
 ![pymol-automtz demo: a 2Fo-Fc density sphere follows the view while the live panel updates in sync](docs/images/demo.gif)
 
-*2Fo-Fc map (+1.5 σ) for myoglobin at 1.2 Å (PDB ID **1BZ6** myoglobin)*
+*2Fo-Fc map (1.5 σ) for myoglobin at 1.2 Å (PDB ID **1BZ6**)*
 
 Built on the `cmd.load_mtz` command of Incentive PyMOL, which reads the
-MTZ, auto-detects refmac/phenix/buster columns, synthesizes σ-normalized map
+MTZ, auto-detects columns, synthesizes σ-normalized map
 objects (no CCP4/gemmi needed), and stores them as `<prefix>.2fofc` and
 `<prefix>.fofc` objects. This plugin renders the mesh, the σ panel, the display
 modes, and the File→Open routing.
 
 ## Requirements
 
-- **Incentive PyMOL only** (tested on 3.1.6.1). The open-source build's
+- **Incentive PyMOL only** (tested on 3.1.6.1). The open-source PyMOL's
   `load_mtz` raises `IncentiveOnlyException`, so this plugin will not work there.
 - The panel is built with **PyQt5** (`pymol.Qt`), which is what the Incentive GUI
   runs on (avoids Tkinter on MacOS.)
