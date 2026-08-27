@@ -4,7 +4,9 @@ description: PyMOL plugin to auto-open MTZ (Coot-style 2Fo-Fc/Fo-Fc maps + live 
 type: project
 ---
 
-**Project:** `pymol-automtz`. Design doc: `DESIGN.md`; project instructions: `CLAUDE.md`.
+**Project:** `pymol-automtz`. Design doc: `DESIGN.md`; project instructions: `CLAUDE.md` (auto-loaded by Claude Code at the repo root).
+
+**Status: shipped & public** at github.com/hilgersmt/pymol-automtz (MIT). The whole plugin is `auto_mtz.py`. **To resume dev on another machine:** clone the repo, read `CLAUDE.md` + `DESIGN.md` + this folder, then work against the Incentive PyMOL app. Test MTZs are NOT in the repo (`.gitignore` excludes `*.mtz/*.pdb`) — use any refmac/phenix MTZ (e.g. a PDB-REDO `<id>_final.mtz`, which carries `FWT/PHWT/DELFWT/PHDELWT`). Note the README is sometimes edited directly on github.com, so `git pull --rebase` before pushing.
 
 **Goal:** a PyMOL plugin making electron density convenient like Coot "Auto Open MTZ": take a `.mtz` on the command line AND via GUI, auto-make 2Fo-Fc + Fo-Fc maps at sensible σ, display as new objects, and dial σ live.
 
